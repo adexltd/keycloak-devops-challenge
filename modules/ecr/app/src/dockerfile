@@ -1,0 +1,9 @@
+FROM jboss/keycloak:15.0.2
+
+ENV KEYCLOAK_USER=admin
+ENV KEYCLOAK_PASSWORD=admin
+
+# COPY realm-export.json /tmp/realm-export.json
+# COPY themes /opt/jboss/keycloak/themes
+
+CMD ["-b", "0.0.0.0", "-Djboss.http.port=8080"]
