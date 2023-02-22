@@ -59,8 +59,18 @@ resource "aws_ecs_task_definition" "default" {
   container_definitions = jsonencode([{
     name  = "keycloak"
     image = var.image
+    health_check = {
+      command     = ["CMD-SHELL", "curl -f http://localhost:8080/auth/ || exit 1"]
+      interval    = 60
+      startPeriod = 300
+      retries     = 2
+      timeout     = 5
+    }
     environment = [
       { "name" : "DB_VENDOR", "value" : "postgres" },
+      { "name" : "PROXY_ADDRESS_FORWARDING", "value" : "true" },
+      { "name" : "JGROUPS_DISCOVERY_PROTOCOL", "value" : "JDBC_PING" },
+      { "name" : "JGROUPS_DISCOVERY_PROPERTIES", "value" : "datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500,remove_old_coords_on_view_change=true" },
       { "name" : "DB_ADDR", "value" : var.db_endpoint },
       { "name" : "DB_PORT", "value" : "5432" },
       { "name" : "DB_USER", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
@@ -93,6 +103,10 @@ resource "aws_ecs_task_definition" "default" {
   cpu                      = var.cpu
   memory                   = var.memory
   tags                     = merge({ "Name" = var.fargate_service_name }, var.tags)
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role" "default" {

@@ -23,6 +23,12 @@ resource "aws_lb_target_group" "target_group" {
     matcher             = "200-499"
     timeout             = 30
   }
+  stickiness {
+    cookie_duration = "86400"
+    cookie_name     = "AUTH_SESSION_ID"
+    enabled         = true
+    type            = "app_cookie"
+  }
   tags = var.tags
 }
 

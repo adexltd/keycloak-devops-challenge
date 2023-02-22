@@ -39,7 +39,7 @@ module "vpc" {
 
 module "postgres_secrets_manager" {
   source      = "./modules/secrets"
-  secret_name = "postgres-credentials"
+  secret_name = "postgres-credentials-keycloak"
   # These Credentials are to be rotated
   db_username = "keycloak"
   db_password = "secrectpassword"
@@ -69,15 +69,17 @@ module "rds" {
     Name        = "keycloak-db"
     Environment = "dev"
   }
+
+  depends_on = [module.postgres_secrets_manager]
 }
 
 
 
 module "ecr" {
   source          = "./modules/ecr"
-  repository_name = "keycloak-repo"
+  repository_name = "keycloak"
   tags = {
-    Name        = "keycloak-repo"
+    Name        = "keycloak"
     Environment = "dev"
   }
 }
@@ -113,6 +115,8 @@ module "keycloak_fargate" {
   source_cidr_blocks   = module.vpc.public_subnets_cidr_blocks
   db_secret_name       = module.postgres_secrets_manager.postgres_secret_name
   db_endpoint          = module.rds.db_hostname
+  desired_count        = 3
+  depends_on           = [module.postgres_secrets_manager, module.ecr]
 }
 
 
