@@ -16,7 +16,7 @@ locals {
 # Configure the AWS Provider
 provider "aws" {
   region  = "us-east-1"
-  profile = "adex_sandbox_1"
+  profile = "adex"
 }
 
 # Need to configure S3 backend.
@@ -39,7 +39,7 @@ module "vpc" {
 
 module "postgres_secrets_manager" {
   source      = "./modules/secrets"
-  secret_name = "postgres-credentials-keycloak"
+  secret_name = "postgres-credentials-keycloak-1"
   # These Credentials are to be rotated
   db_username = "keycloak"
   db_password = "secrectpassword"
@@ -99,7 +99,7 @@ module "alb" {
   }
 }
 
-# Push Docker Image to registry
+# # Push Docker Image to registry
 
 module "keycloak_fargate" {
   source = "./modules/fargate"
@@ -118,5 +118,3 @@ module "keycloak_fargate" {
   desired_count        = 3
   depends_on           = [module.postgres_secrets_manager, module.ecr]
 }
-
-
