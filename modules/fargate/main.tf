@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "default" {
     name  = "keycloak"
     image = var.image
     health_check = {
-      command     = ["start-dev --cache-config-file=cache-ispn-jdbc-ping.xml"]
+      command     = ["start --cache-config-file=cache-ispn-jdbc-ping.xml"]
       interval    = 60
       startPeriod = 300
       retries     = 2
@@ -76,7 +76,7 @@ resource "aws_ecs_task_definition" "default" {
         { "name": "KC_HOSTNAME_STRICT_BACKCHANNEL","value": "true"},
         { "name": "KC_LOG_LEVEL", "value": "INFO"},
         { "name": "KC_HTTPS_ENABLED", "value": "false"},
-        { "name" : "KC_DB_URL", "value" : "jdbc:postgresql://${var.db_endpoint}/keycloak-db" },
+        { "name" : "KC_DB_URL", "value" : "jdbc:postgresql://${var.db_endpoint}/keycloak" },
         { "name" : "KC_DB_PORT", "value" : "5432" },
         { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
         { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
