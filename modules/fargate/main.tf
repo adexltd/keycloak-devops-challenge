@@ -67,7 +67,6 @@ resource "aws_ecs_task_definition" "default" {
       timeout     = 5
     }
     environment = [
-        { "name": "KC_HTTP_RELATIVE_PATH", "value": "/auth"},
         { "name": "KC_HEALTH_ENABLED", "value": "true"},
         { "name": "KC_DB", "value": "postgres"},
         { "name" : "JGROUPS_DISCOVERY_PROTOCOL", "value" : "JDBC_PING" },
