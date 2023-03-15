@@ -8,7 +8,7 @@ resource "aws_ecr_repository" "repo" {
     command = "/bin/bash ${path.module}/push.sh"
     environment = {
       AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
-      PROFILE        = "adex_sandbox_1"
+      PROFILE        = "adex"
       MODULE_PATH    = path.module
     }
   }

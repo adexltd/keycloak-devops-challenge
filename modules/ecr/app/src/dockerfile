@@ -1,9 +1,18 @@
-FROM jboss/keycloak:15.0.2
+FROM quay.io/keycloak/keycloak:21.0 as builder
 
-ENV KEYCLOAK_USER=admin
-ENV KEYCLOAK_PASSWORD=admin
+ENV KC_DB=postgres
+ENV KC_FEATURES=step-up-authentication 
+# just relevant if you would activate specific features
+ENV JGROUPS_DISCOVERY_PROTOCOL=JDBC_PING
+ENV KC_HEALTH_ENABLED=true
+#JDBC-PING cluster setup
+ENV KC_CACHE_CONFIG_FILE=cache-ispn-jdbc-ping.xml
+COPY ./cache-ispn-jdbc-ping.xml /opt/keycloak/conf/cache-ispn-jdbc-ping.xml
+RUN /opt/keycloak/bin/kc.sh build
 
-# COPY realm-export.json /tmp/realm-export.json
-# COPY themes /opt/jboss/keycloak/themes
-
-CMD ["-b", "0.0.0.0", "-Djboss.http.port=8080"]
+FROM quay.io/keycloak/keycloak:21.0
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
+COPY --from=builder /opt/keycloak/conf/cache-ispn-jdbc-ping.xml /opt/keycloak/conf
+WORKDIR /opt/keycloak
+CMD [ "start-dev" ]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
