@@ -59,23 +59,27 @@ resource "aws_ecs_task_definition" "default" {
   container_definitions = jsonencode([{
     name  = "keycloak"
     image = var.image
+    command = ["start --optimized"]
     health_check = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:8080/auth/ || exit 1"]
+      command = [
+            "CMD-SHELL",
+            "curl -f http://127.0.0.1:8080/health || exit 1",
+          ]
       interval    = 60
       startPeriod = 300
       retries     = 2
       timeout     = 5
     }
     environment = [
-      { "name" : "DB_VENDOR", "value" : "postgres" },
-      { "name" : "PROXY_ADDRESS_FORWARDING", "value" : "true" },
-      { "name" : "JGROUPS_DISCOVERY_PROTOCOL", "value" : "JDBC_PING" },
-      { "name" : "JGROUPS_DISCOVERY_PROPERTIES", "value" : "datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500,remove_old_coords_on_view_change=true" },
-      { "name" : "DB_ADDR", "value" : var.db_endpoint },
-      { "name" : "DB_PORT", "value" : "5432" },
-      { "name" : "DB_USER", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
-      { "name" : "DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
-      { "name" : "DB_DATABASE", "value" : "keycloak" },
+        { "name": "JGROUPS_DISCOVERY_PROTOCOL", "value": "JDBC_PING"},
+        { "name" : "JGROUPS_DISCOVERY_PROPERTIES", "value" : "datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500,remove_old_coords_on_view_change=true" },
+        { "name": "KC_LOG_LEVEL", "value": "INFO"},
+        { "name" : "KC_DB_URL", "value" : "jdbc:postgresql://${var.db_endpoint}/keycloak" },
+        { "name" : "KC_DB_PORT", "value" : "5432" },
+        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
+        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
+        { "name" : "KEYCLOAK_ADMIN", "value" : "admin" },
+        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "admin" }
     ]
     # secrets = [
     #   {
