@@ -1,4 +1,5 @@
 data "aws_caller_identity" "current" {}
+
 terraform {
   required_providers {
     aws = {
@@ -11,15 +12,24 @@ terraform {
 locals {
   project_name = "keycloak"
   region       = "us-east-1"
+  owner        = "Roshan Raman Giri"
+  domain_name  = "keycoak.aawajai.com"
+  env          = "dev"
+  local_tags = {
+    Environment = "Development"
+    owner       = "Roshan Raman Giri"
+  }
 }
 
 # Configure the AWS Provider
 provider "aws" {
   region  = "us-east-1"
-  profile = "adex_sandbox_1"
+  profile = "default"
 }
 
 # Need to configure S3 backend.
+
+# Need to configure route 53 
 
 module "vpc" {
   source                       = "terraform-aws-modules/vpc/aws"
@@ -39,12 +49,14 @@ module "vpc" {
 
 module "postgres_secrets_manager" {
   source      = "./modules/secrets"
-  secret_name = "postgres-credentials-keycloak"
+  secret_name = "postgres-credentials-keycloak14"
   # These Credentials are to be rotated
   db_username = "keycloak"
   db_password = "secrectpassword"
   tags = {
-    Environment = "dev"
+    Name        = "${local.project_name}-secrets"
+    Environment = "${local.env}"
+    owner       = "${local.owner}"
   }
 }
 
@@ -52,7 +64,7 @@ module "rds" {
   source = "./modules/rds"
 
   db_name                           = "${local.project_name}-db"
-  db_instance_class                 = "db.t3.micro"
+  db_instance_class                 = "db.t2.micro"
   db_engine                         = "postgres"
   db_engine_version                 = "11"
   db_allocated_storage              = 20
@@ -66,8 +78,9 @@ module "rds" {
   vpc_id                            = module.vpc.vpc_id
   db_secret_name                    = module.postgres_secrets_manager.postgres_secret_name
   db_tags = {
-    Name        = "keycloak-db"
-    Environment = "dev"
+    Name        = "${local.project_name}-db"
+    Environment = "${local.env}"
+    owner       = "${local.owner}"
   }
 
   depends_on = [module.postgres_secrets_manager]
@@ -79,8 +92,9 @@ module "ecr" {
   source          = "./modules/ecr"
   repository_name = "keycloak"
   tags = {
-    Name        = "keycloak"
-    Environment = "dev"
+    Name        = "${local.project_name}-ecr"
+    Environment = "${local.env}"
+    owner       = "${local.owner}"
   }
 }
 
@@ -94,8 +108,9 @@ module "alb" {
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.public_subnets
   tags = {
-    Name        = "keycloak-alb"
-    Environment = "dev"
+    Name        = "${local.project_name}-alb"
+    Environment = "${local.env}"
+    owner       = "${local.owner}"
   }
 }
 
@@ -115,8 +130,12 @@ module "keycloak_fargate" {
   source_cidr_blocks   = module.vpc.public_subnets_cidr_blocks
   db_secret_name       = module.postgres_secrets_manager.postgres_secret_name
   db_endpoint          = module.rds.db_hostname
+  project_domain_name  = local.domain_name
   desired_count        = 3
   depends_on           = [module.postgres_secrets_manager, module.ecr]
+  tags = {
+    Name        = "${local.project_name}-fargate"
+    Environment = "${local.env}"
+    owner       = "${local.owner}"
+  }
 }
-
-

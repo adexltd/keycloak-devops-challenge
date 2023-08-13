@@ -1,9 +1,41 @@
-FROM jboss/keycloak:15.0.2
+FROM quay.io/keycloak/keycloak:latest as builder
+#Configure a database vendor
+ENV KC_DB=postgres
+ENV KC_FEATURES=step-up-authentication,admin-fine-grained-authz,scripts,token-exchange,declarative-user-profile,dynamic-scopes,client-secret-rotation,recovery-codes,update-email
+#Enable health and metrics support
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+#JDBC-PING cluster setup
+ENV KC_CACHE_CONFIG_FILE=cache-ispn-jdbc-ping.xml
+ENV KC_HTTP_ENABLED=true
+ENV KC_HTTP_RELATIVE_PATH=/
+ENV KC_PROXY=edge
+ENV KC_HOSTNAME_STRICT_BACKCHANNEL=false
+# # ENV HTTP-KEY-STORE-PASSWORD="password"
+# # ENV HTTP-KEY-STORE_FILE=/home/keycloak/keycloak-22.0.0/conf/server.keystore
+COPY conf/cache-ispn-jdbc-ping.xml /opt/keycloak/conf/cache-ispn-jdbc-ping.xml
+RUN /opt/keycloak/bin/kc.sh build
 
-ENV KEYCLOAK_USER=admin
-ENV KEYCLOAK_PASSWORD=admin
 
-# COPY realm-export.json /tmp/realm-export.json
-# COPY themes /opt/jboss/keycloak/themes
+#ENV KC_HOSTNAME_STRICT_HTTPS=true
+#ENV KC_CACHE=ispn
+#ENV KC_PROXY=edge
+#ENV KC_HOSTNAME_STRICT_BACKCHANNEL=false
+#ENV KC_PROXY=passthrough
+#COPY conf/keycloak.conf /opt/keycloak/conf/keycloak.conf
+#RUN rm -f /opt/keycloak/conf/cache-ispn.xml
 
-CMD ["-b", "0.0.0.0", "-Djboss.http.port=8080"]
+FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
+RUN mkdir -p /mnt/rootfs
+RUN dnf install  --installroot /mnt/rootfs curl --releasever 9 --setopt  install_weak_deps=false --nodocs -y; dnf --installroot /mnt/rootfs clean  all
+
+FROM quay.io/keycloak/keycloak:latest
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
+COPY --from=builder /opt/keycloak/conf/cache-ispn-jdbc-ping.xml /opt/keycloak/conf
+# COPY --from=ubi-micro-build /mnt/rootfs /
+# COPY server.keystore /home/keycloak/keycloak-22.0.0/conf
+WORKDIR /opt/keycloak
+#COPY ./themes/ /opt/keycloak/themes/ # only applies if you have customized themes
+EXPOSE 8080
+# CMD [ "start-dev --optimized" ]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start --optimized"]

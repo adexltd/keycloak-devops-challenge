@@ -75,3 +75,8 @@ variable "db_endpoint" {
   type = string
 
 }
+
+variable "project_domain_name" {
+  type        = string
+  description = "Domain name for the Keycloak service"
+}

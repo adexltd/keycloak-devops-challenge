@@ -36,11 +36,14 @@ resource "aws_security_group" "default" {
 
 resource "aws_security_group_rule" "ingress" {
 
-  type              = "ingress"
-  from_port         = var.container_port
-  to_port           = var.container_port
-  protocol          = "tcp"
-  cidr_blocks       = var.source_cidr_blocks
+  type        = "ingress"
+  from_port   = 0 #here I have to check 
+  to_port     = 0
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  # from_port         = var.container_port
+  # to_port           = var.container_port
+  # cidr_blocks       = var.source_cidr_blocks
   security_group_id = aws_security_group.default.id
 }
 
@@ -59,30 +62,30 @@ resource "aws_ecs_task_definition" "default" {
   container_definitions = jsonencode([{
     name  = "keycloak"
     image = var.image
+    environment = [
+        { "name" : "KC_LOG_LEVEL", "value": "INFO"},
+        { "name" : "KC_DB_URL", "value" : "jdbc:postgresql://${var.db_endpoint}:5432/keycloak" },
+        { "name" : "KC_DB", "value" : "postgres" },
+        { "name" : "KC_PROXY", "value" : "edge" },
+        { "name" : "KC_HOSTNAME_STRICT", "value" : "false" },
+        { "name" : "KC_HOSTNAME_STRICT_BACKCHANNEL", "value" : "true" },
+        { "name" : "KC_DB_SCHEMA", "value" : "public" },
+        { "name" : "KC_CACHE_CONFIG_FILE", "value" : "/opt/keycloak/conf/cache-ispn-jdbc-ping.xml" },
+        { "name" : "KC_HOSTNAME", "value" : "keycloak.aawajai.com" },
+        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
+        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
+        { "name" : "KEYCLOAK_ADMIN", "value" : "admin" },
+        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "admin" }
+
+    ]
+
     health_check = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:8080/auth/ || exit 1"]
+      command     = ["CMD-SHELL", "curl -f ${var.project_domain_name}/health || exit 1"]
       interval    = 60
       startPeriod = 300
       retries     = 2
       timeout     = 5
     }
-    environment = [
-      { "name" : "DB_VENDOR", "value" : "postgres" },
-      { "name" : "PROXY_ADDRESS_FORWARDING", "value" : "true" },
-      { "name" : "JGROUPS_DISCOVERY_PROTOCOL", "value" : "JDBC_PING" },
-      { "name" : "JGROUPS_DISCOVERY_PROPERTIES", "value" : "datasource_jndi_name=java:jboss/datasources/KeycloakDS,info_writer_sleep_time=500,remove_old_coords_on_view_change=true" },
-      { "name" : "DB_ADDR", "value" : var.db_endpoint },
-      { "name" : "DB_PORT", "value" : "5432" },
-      { "name" : "DB_USER", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
-      { "name" : "DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
-      { "name" : "DB_DATABASE", "value" : "keycloak" },
-    ]
-    # secrets = [
-    #   {
-    #     "valueFrom" : "${data.aws_secretsmanager_secret_version.current_secrets.arn}:username",
-    #     "name" : "DB_USER"
-    #   }
-    # ]
     portMappings = [{
       containerPort = var.container_port,
       hostPort      = var.container_port,
@@ -114,7 +117,7 @@ resource "aws_iam_role" "default" {
   name               = local.iam_name
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
   path               = "/"
-  description        = "Iam role for ECS task"
+  description        = "IAM role for ECS task"
   tags               = merge({ "Name" = local.iam_name }, var.tags)
 }
 

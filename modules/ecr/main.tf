@@ -3,12 +3,14 @@ resource "aws_ecr_repository" "repo" {
   name                 = var.repository_name
   image_tag_mutability = "MUTABLE"
   tags                 = var.tags
+  force_delete         = true
+
 
   provisioner "local-exec" {
-    command = "/bin/bash ${path.module}/push.sh"
+    command = "/bin/bash ~/projects/adex/keycloak-devops-challenge/${path.module}/push.sh" # this also I have to check
     environment = {
       AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
-      PROFILE        = "adex_sandbox_1"
+      PROFILE        = "default" # has to be changed
       MODULE_PATH    = path.module
     }
   }
