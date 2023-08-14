@@ -141,3 +141,11 @@ module "keycloak_fargate" {
     owner       = "${local.owner}"
   }
 }
+
+resource "aws_route53_record" "record_keyclaok" {
+  type    = "CNAME"
+  name    = local.domain_name
+  ttl     = "86400"
+  zone_id = "Z03028901EPUSX1K65JBK"
+  records = [module.alb.alb_dns_name]
+}

@@ -71,7 +71,7 @@ resource "aws_ecs_task_definition" "default" {
         { "name" : "KC_HOSTNAME_STRICT_BACKCHANNEL", "value" : "true" },
         { "name" : "KC_DB_SCHEMA", "value" : "public" },
         { "name" : "KC_CACHE_CONFIG_FILE", "value" : "/opt/keycloak/conf/cache-ispn-jdbc-ping.xml" },
-        { "name" : "KC_HOSTNAME", "value" : "keycloak.aawajai.com" },
+        { "name" : "KC_HOSTNAME", "value" : "${var.project_domain_name}" },
         { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
         { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
         { "name" : "KEYCLOAK_ADMIN", "value" : "admin" },
