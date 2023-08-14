@@ -49,7 +49,7 @@ module "vpc" {
 
 module "postgres_secrets_manager" {
   source      = "./modules/secrets"
-  secret_name = "postgres-credentials-keycloak14"
+  secret_name = "postgres-credentials-keycloak1111"
   # These Credentials are to be rotated
   db_username = "keycloak"
   db_password = "secrectpassword"
@@ -96,6 +96,7 @@ module "ecr" {
     Environment = "${local.env}"
     owner       = "${local.owner}"
   }
+  depends_on           = [module.vpc, module.rds, module.postgres_secrets_manager]
 }
 
 module "alb" {
@@ -107,6 +108,7 @@ module "alb" {
   target_group_port = 8080
   vpc_id            = module.vpc.vpc_id
   subnet_ids        = module.vpc.public_subnets
+  depends_on        = [module.vpc, module.rds, module.postgres_secrets_manager]
   tags = {
     Name        = "${local.project_name}-alb"
     Environment = "${local.env}"

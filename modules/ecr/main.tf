@@ -7,7 +7,7 @@ resource "aws_ecr_repository" "repo" {
 
 
   provisioner "local-exec" {
-    command = "/bin/bash ~/projects/adex/keycloak-devops-challenge/${path.module}/push.sh" # this also I have to check
+    command = "/bin/bash ${path.module}/push.sh"
     environment = {
       AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
       PROFILE        = "default" # has to be changed
