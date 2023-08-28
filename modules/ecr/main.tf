@@ -1,13 +1,20 @@
 data "aws_caller_identity" "current" {}
+
+resource "aws_ecr_repository" "builder_repo" {
+  name                 = var.builder_repository_name
+  image_tag_mutability = "MUTABLE"
+  tags                 = var.tags
+  force_delete         = true
+}
+
 resource "aws_ecr_repository" "repo" {
   name                 = var.repository_name
   image_tag_mutability = "MUTABLE"
   tags                 = var.tags
   force_delete         = true
 
-
   provisioner "local-exec" {
-    command = "/bin/bash ${path.module}/push.sh"
+    command = "/bin/bash ${path.module}/../../scripts/push.sh"
     environment = {
       AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
       PROFILE        = "default" # has to be changed

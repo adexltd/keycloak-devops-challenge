@@ -37,13 +37,10 @@ resource "aws_security_group" "default" {
 resource "aws_security_group_rule" "ingress" {
 
   type        = "ingress"
-  from_port   = 0 #here I have to check 
-  to_port     = 0
-  protocol    = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
-  # from_port         = var.container_port
-  # to_port           = var.container_port
-  # cidr_blocks       = var.source_cidr_blocks
+  from_port         = var.container_port
+  to_port           = var.container_port
+  protocol          = "tcp"
+  cidr_blocks       = var.source_cidr_blocks
   security_group_id = aws_security_group.default.id
 }
 
@@ -64,14 +61,20 @@ resource "aws_ecs_task_definition" "default" {
     image = var.image
     environment = [
         { "name" : "KC_LOG_LEVEL", "value": "INFO"},
+        { "name" : "KC_FEATURES", "value": "step-up-authentication,admin-fine-grained-authz,scripts,token-exchange,declarative-user-profile,dynamic-scopes,client-secret-rotation,recovery-codes,update-email" },
+        { "name" : "KC_HEALTH_ENABLED", "value": "true" },
+        { "name" : "KC_METRICS_ENABLED", "value": "true" },
+        { "name" : "KC_CACHE_CONFIG_FILE", "value": "cache-ispn-jdbc-ping.xml" },
+        { "name" : "KC_HTTP_ENABLED", "value": "false" },
+        { "name" : "KC_HTTP_RELATIVE_PATH", "value": "/" },
         { "name" : "KC_DB_URL", "value" : "jdbc:postgresql://${var.db_endpoint}:5432/keycloak" },
         { "name" : "KC_DB", "value" : "postgres" },
         { "name" : "KC_PROXY", "value" : "edge" },
         { "name" : "KC_HOSTNAME_STRICT", "value" : "false" },
-        { "name" : "KC_HOSTNAME_STRICT_BACKCHANNEL", "value" : "true" },
+        { "name" : "KC_HOSTNAME_STRICT_BACKCHANNEL", "value" : "false" },
         { "name" : "KC_DB_SCHEMA", "value" : "public" },
-        { "name" : "KC_CACHE_CONFIG_FILE", "value" : "/opt/keycloak/conf/cache-ispn-jdbc-ping.xml" },
-        { "name" : "KC_HOSTNAME", "value" : "${var.project_domain_name}" },
+        { "name" : "KC_HOSTNAME_URL", "value" : "https://keycloak.aawajai.com" },
+        { "name" : "KC_HOSTNAME_ADMIN_URL", "value" : "https://keycloak.aawajai.com" },
         { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
         { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
         { "name" : "KEYCLOAK_ADMIN", "value" : "admin" },

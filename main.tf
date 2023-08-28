@@ -13,7 +13,7 @@ locals {
   project_name = "keycloak"
   region       = "us-east-1"
   owner        = "Roshan Raman Giri"
-  domain_name  = "keycoak.aawajai.com"
+  domain_name  = "keycloak.aawajai.com"
   env          = "dev"
   local_tags = {
     Environment = "Development"
@@ -49,7 +49,8 @@ module "vpc" {
 
 module "postgres_secrets_manager" {
   source      = "./modules/secrets"
-  secret_name = "postgres-credentials-keycloak1111"
+  secret_name = "postgres-credentials-keycloak-01"
+  recovery_window_in_days = 0
   # These Credentials are to be rotated
   db_username = "keycloak"
   db_password = "secrectpassword"
@@ -91,6 +92,7 @@ module "rds" {
 module "ecr" {
   source          = "./modules/ecr"
   repository_name = "keycloak"
+  builder_repository_name="keycloak_builder"
   tags = {
     Name        = "${local.project_name}-ecr"
     Environment = "${local.env}"
@@ -145,7 +147,7 @@ module "keycloak_fargate" {
 resource "aws_route53_record" "record_keyclaok" {
   type    = "CNAME"
   name    = local.domain_name
-  ttl     = "86400"
+  ttl     = "300"
   zone_id = "Z03028901EPUSX1K65JBK"
   records = [module.alb.alb_dns_name]
 }
