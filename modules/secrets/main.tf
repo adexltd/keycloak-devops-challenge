@@ -1,27 +1,17 @@
-resource "aws_secretsmanager_secret" "postgres_secret" {
-  name = var.db_secret_name
-  recovery_window_in_days = var.recovery_window_in_days
-  tags = var.tags
-}
-
-resource "aws_secretsmanager_secret_version" "postgres_secret_version" {
-  secret_id = aws_secretsmanager_secret.postgres_secret.id
-  secret_string = jsonencode({
-    username = var.db_username
-    password = var.db_password
-  })
-}
-
-resource "aws_secretsmanager_secret" "postgres_secret" {
+resource "aws_secretsmanager_secret" "keycloak_secret" {
   name = var.keycloak_secret_name
   recovery_window_in_days = var.recovery_window_in_days
   tags = var.tags
 }
 
-resource "aws_secretsmanager_secret" "keycloak_admin_secrets" {
-  secret_id = aws_secretsmanager_secret.postgres_secret.id
+resource "aws_secretsmanager_secret_version" "keycloak_secret_version" {
+  secret_id = aws_secretsmanager_secret.keycloak_secret.id
   secret_string = jsonencode({
-    username = var.var.keycloak_admin_username
-    password = var.var.keycloak_admin_password
+    db_username = var.db_username
+    db_password = var.db_password
+    keycloak_admin_username = var.keycloak_admin_username
+    keycloak_admin_password = var.keycloak_admin_password
+    certificate_arn_us-east-1 = var.certificate_arn_us-east-1
+    certificate_arn_us-east-2 = var.certificate_arn_us-east-2
   })
 }

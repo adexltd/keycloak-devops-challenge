@@ -1,6 +1,6 @@
-output "postgres_secret_arn" {
-  value = aws_secretsmanager_secret.postgres_secret.arn
+output "keycloak_secret_arn" {
+  value = aws_secretsmanager_secret.keycloak_secret.arn
 }
-output "postgres_secret_name" {
-  value = var.secret_name
+output "keycloak_secret_name" {
+  value = var.keycloak_secret_name
 }

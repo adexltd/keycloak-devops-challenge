@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret" "by_name" {
-  name = var.db_secret_name
+  name = var.keycloak_secret_name
 }
 
 data "aws_secretsmanager_secret_version" "current_secrets" {

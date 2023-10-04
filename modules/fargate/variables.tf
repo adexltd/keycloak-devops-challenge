@@ -66,7 +66,7 @@ variable "desired_count" {
   default = 1
 }
 
-variable "db_secret_name" {
+variable "keycloak_secret_name" {
   description = "AWS Secret manager ARN to retrive DB username and password"
   type        = string
 }

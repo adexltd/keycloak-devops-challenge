@@ -76,12 +76,12 @@ resource "aws_ecs_task_definition" "default" {
         { "name" : "KC_HOSTNAME_STRICT", "value" : "false" },
         { "name" : "KC_HOSTNAME_STRICT_BACKCHANNEL", "value" : "false" },
         { "name" : "KC_DB_SCHEMA", "value" : "public" },
-        { "name" : "KC_HOSTNAME_URL", "value" : "https://keycloak.aawajai.com" },
-        { "name" : "KC_HOSTNAME_ADMIN_URL", "value" : "https://keycloak.aawajai.com" },
-        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.db_current_secrets.secret_string)["username"]}" },
-        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.db_current_secrets.secret_string)["password"]}" },
-        { "name" : "KEYCLOAK_ADMIN", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["username"]}" },
-        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["password"]}" }
+        { "name" : "KC_HOSTNAME_URL", "value" : "https://${var.project_domain_name}" },
+        { "name" : "KC_HOSTNAME_ADMIN_URL", "value" : "https://${var.project_domain_name}" },
+        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["db_username"]}" },
+        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["db_password"]}" },
+        { "name" : "KEYCLOAK_ADMIN", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["keycloak_admin_username"]}" },
+        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["keycloak_admin_username"]}" }
 
     ]
 

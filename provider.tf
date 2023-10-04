@@ -5,7 +5,7 @@ provider "aws" {
     tags = {
       Owner       = var.owner
       Environment = var.environment
-      Application = var.application
+      Application = var.name
     }
   }
 }

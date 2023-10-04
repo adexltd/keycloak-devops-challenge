@@ -30,5 +30,12 @@ variable "tags" {
   }
 }
 
+variable "keycloak_secret_name" {
+  description = "The name of the secret to create"
+}
+
+variable "region" {
+  description = "value of the region"  
+}
 
 

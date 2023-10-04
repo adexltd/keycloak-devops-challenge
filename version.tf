@@ -7,9 +7,9 @@ terraform {
   }
 
   backend "s3" {
-    bucket  = "keycloak"
-    region  = var.region
+    bucket  = "keycloak-tf"
+    region  = "us-east-2"
     encrypt = true
-    key     = "lms-ecs-base-infra/terraform.tfstate"
+    key     = "state-file/terraform.tfstate"
   }
 }

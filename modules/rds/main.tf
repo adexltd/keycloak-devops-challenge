@@ -23,8 +23,8 @@ resource "aws_db_instance" "rds_instance" {
   engine_version             = var.db_engine_version
   instance_class             = var.db_instance_class
   db_name                    = "keycloak"
-  username                   = jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]
-  password                   = jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]
+  username                   = jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["db_username"]
+  password                   = jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["db_password"]
   db_subnet_group_name       = aws_db_subnet_group.rds_subnet_group.name
   parameter_group_name       = aws_db_parameter_group.rds_parameter_group.name
   multi_az                   = var.db_multi_az

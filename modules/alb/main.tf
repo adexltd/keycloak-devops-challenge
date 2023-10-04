@@ -76,13 +76,22 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-2:426857564226:certificate/f53ef742-9dae-4c8e-b76d-1b0ba1cda8c5" #need to change based upon the profile
+  certificate_arn   = jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["certificate_arn_${var.region}"]
   depends_on        = [aws_lb_target_group.target_group]
 
   default_action {
     target_group_arn = aws_lb_target_group.target_group.arn
     type             = "forward"
   }
+}
+
+
+data "aws_secretsmanager_secret" "certificate_arn" {
+  name = var.keycloak_secret_name
+}
+
+data "aws_secretsmanager_secret_version" "current_secrets" {
+  secret_id = data.aws_secretsmanager_secret.certificate_arn.id
 }
 
 

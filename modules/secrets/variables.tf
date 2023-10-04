@@ -1,7 +1,3 @@
-variable "db_secret_name" {
-  description = "The name of the secret to create"
-}
-
 variable "keycloak_secret_name" {
   description = "The name of the secret to create"
 }
@@ -20,6 +16,14 @@ variable "keycloak_admin_username" {
 
 variable "keycloak_admin_password" {
   description = "password for the Keycloak admin"  
+}
+
+variable "certificate_arn_us-east-1" {
+  description = "certificate arn for us-east-1"
+}
+
+variable "certificate_arn_us-east-2" {
+  description = "certificate arn for us-east-2"
 }
 
 variable "recovery_window_in_days" {

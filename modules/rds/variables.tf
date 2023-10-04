@@ -57,7 +57,7 @@ variable "cidr_blocks_to_allow_access_to_db" {
   description = "List of CIDR Ranage to allow traffic to DataBase"
 
 }
-variable "db_secret_name" {
+variable "keycloak_secret_name" {
   description = "AWS Secret manager ARN to retrive DB username and password"
   type        = string
 }
