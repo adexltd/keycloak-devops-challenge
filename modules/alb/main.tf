@@ -76,7 +76,7 @@ resource "aws_lb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-1:426857564226:certificate/3fc0c3bc-90f6-4600-bcd5-6ffeb59db6db" #need to change based upon the profile
+  certificate_arn   = "arn:aws:acm:us-east-2:426857564226:certificate/f53ef742-9dae-4c8e-b76d-1b0ba1cda8c5" #need to change based upon the profile
   depends_on        = [aws_lb_target_group.target_group]
 
   default_action {
@@ -85,31 +85,5 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-# Request and validate an SSL certificate from AWS Certificate Manager (ACM)
-# resource "aws_acm_certificate" "keycloak-certificate" {
-#   domain_name       = "keycloak-alb-565685615.us-east-1.elb.amazonaws.com"
-#   validation_method = "DNS"
-
-
-#   tags = {
-#     Name = "SSL certificate"
-#   }
-# }
-
-# resource "aws_lb_listener_certificate" "https_additional_certs" {
-#   listener_arn    = aws_lb_listener.https.arn
-#   certificate_arn = aws_acm_certificate.keycloak-certificate.arn
-# }
-
-# resource "aws_lb_listener" "https" {
-#   load_balancer_arn = aws_lb.alb.arn
-#   port              = 443
-#   protocol          = "HTTPS"
-#   certificate_arn   = var.certificate_arn
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.keycloak.arn
-#   }
-# }
 
 

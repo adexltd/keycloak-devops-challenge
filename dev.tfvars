@@ -1,0 +1,5 @@
+  name = "keycloak"
+  region = "us-east-2"
+  owner = "Roshan Raman Giri"
+  environment = "dev"
+  domain_name = "keycloak.aawajai.com"

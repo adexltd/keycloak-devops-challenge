@@ -1,11 +1,11 @@
 data "aws_caller_identity" "current" {}
 
-resource "aws_ecr_repository" "builder_repo" {
-  name                 = var.builder_repository_name
-  image_tag_mutability = "MUTABLE"
-  tags                 = var.tags
-  force_delete         = true
-}
+# resource "aws_ecr_repository" "builder_repo" {
+#   name                 = var.builder_repository_name
+#   image_tag_mutability = "MUTABLE"
+#   tags                 = var.tags
+#   force_delete         = true
+# }
 
 resource "aws_ecr_repository" "repo" {
   name                 = var.repository_name

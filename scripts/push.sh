@@ -1,5 +1,5 @@
 #!/bin/bash
-REGION="us-east-1"
+REGION="us-east-2"
 PROFILE=$PROFILE
 AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
 IMAGE_NAME="keycloak"

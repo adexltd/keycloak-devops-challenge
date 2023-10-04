@@ -10,6 +10,7 @@ resource "aws_ecs_service" "default" {
   desired_count    = var.desired_count
   platform_version = "LATEST"
   launch_type      = "FARGATE"
+  enable_execute_command = true   ###Enabled for ssm
 
   deployment_controller {
     type = "ECS"
@@ -56,6 +57,8 @@ resource "aws_security_group_rule" "egress" {
 resource "aws_ecs_task_definition" "default" {
   family             = var.fargate_service_name
   execution_role_arn = aws_iam_role.default.arn
+  task_role_arn      = aws_iam_role.default.arn
+
   container_definitions = jsonencode([{
     name  = "keycloak"
     image = var.image
@@ -75,10 +78,10 @@ resource "aws_ecs_task_definition" "default" {
         { "name" : "KC_DB_SCHEMA", "value" : "public" },
         { "name" : "KC_HOSTNAME_URL", "value" : "https://keycloak.aawajai.com" },
         { "name" : "KC_HOSTNAME_ADMIN_URL", "value" : "https://keycloak.aawajai.com" },
-        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["username"]}" },
-        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.current_secrets.secret_string)["password"]}" },
-        { "name" : "KEYCLOAK_ADMIN", "value" : "admin" },
-        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "admin" }
+        { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.db_current_secrets.secret_string)["username"]}" },
+        { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.db_current_secrets.secret_string)["password"]}" },
+        { "name" : "KEYCLOAK_ADMIN", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["username"]}" },
+        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["password"]}" }
 
     ]
 
@@ -98,7 +101,7 @@ resource "aws_ecs_task_definition" "default" {
       logDriver = "awslogs"
       options = {
         awslogs-group : "/ecs/keycloak"
-        awslogs-region : "us-east-1"
+        awslogs-region : "us-east-2"
         awslogs-stream-prefix : "ecs"
       }
     }
@@ -154,10 +157,15 @@ data "aws_iam_policy" "ecs_task_execution" {
 data "aws_iam_policy_document" "fargate" {
   statement {
     actions = [
+      "ecs:ExecuteCommand",
       "ecr:GetAuthorizationToken",
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage"
+      "ecr:BatchGetImage",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
     ]
     resources = ["*"]
     effect    = "Allow"
