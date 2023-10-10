@@ -41,7 +41,7 @@ jobs:
       - name: Verify Terraform version
         run: terraform --version
 
-      - name: Create Environment
+      - name: Fetching Secrets
         run: |
           cd ${{ env.working_dir }}
           cat << EOF > sec.tfvars
@@ -52,6 +52,8 @@ jobs:
           certificate_arn_us-east-1 = "arn:aws:acm:us-east-1:${{ secrets.ADEX_POC}}:certificate/${{ secrets.CERT_US_EAST_1}}"
           certificate_arn_us-east-2 = "arn:aws:acm:us-east-2:${{ secrets.ADEX_POC}}:certificate/${{ secrets.CERT_US_EAST_2}}"
           EOF
+          cd ..
+          sed -i '1s;^;PROFILE=default\nAWS_ACCOUNT_ID=${{ secrets.ADEX_POC }}\n;' scripts/push.sh
 
       - name: Terraform Initialize
         run: |
