@@ -10,7 +10,7 @@ resource "aws_ecr_repository" "repo" {
     command = "/bin/bash ${path.module}/../../../scripts/push.sh"
     environment = {
       AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
-      PROFILE        = "default" # has to be changed
+      PROFILE        = var.profile
       MODULE_PATH    = path.module
     }
   }

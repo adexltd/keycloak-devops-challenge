@@ -1,7 +1,7 @@
 #!/bin/bash
 REGION="us-east-2"
-PROFILE=$PROFILE
-AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+PROFILE=default
+AWS_ACCOUNT_ID=${{ secrets.ADEX_POC }}
 IMAGE_NAME="keycloak"
 MODULE_PATH=$MODULE_PATH
 aws ecr get-login-password --region $REGION --profile $PROFILE | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com

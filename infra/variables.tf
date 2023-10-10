@@ -107,3 +107,9 @@ variable "certificate_arn_us-east-2" {
   type        = string
   default     = "arn:aws:acm:us-east-2:your-account-id:certificate/your-certificate-id"
 }
+
+variable "profile" {
+  description = "value of AWS_PROFILE"
+  type = string
+  default = "default"
+}

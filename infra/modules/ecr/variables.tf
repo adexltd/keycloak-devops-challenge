@@ -13,3 +13,7 @@ variable "tags" {
   type        = map(any)
 }
 
+variable "profile" {
+  description = "value of AWS_PROFILE"
+  type = string
+}

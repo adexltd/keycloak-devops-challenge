@@ -10,3 +10,4 @@ db_instance_class       = "db.t2.micro"
 db_port                 = 5432
 db_multi_az             = false
 db_allocated_storage    = 20
+profile                 = "default"
