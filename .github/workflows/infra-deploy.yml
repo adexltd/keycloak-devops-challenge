@@ -31,7 +31,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-            role-to-assume: arn:aws:iam::${{ secrets.ADEX_POC }}:role/github-oidc-role
+            role-to-assume: arn:aws:iam::${{ secrets.ADEX_POC }}:role/github_oidc
             role-session-name: OIDCSession
             aws-region: ${{ env.AWS_REGION }}
             
