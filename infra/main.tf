@@ -56,7 +56,7 @@ module "rds" {
 module "ecr" {
   source          = "./modules/ecr"
   repository_name = var.name
-  # builder_repository_name="keycloak_builder"
+  profile    = var.profile
   tags       = var.tags
   depends_on = [module.vpc, module.rds, module.secrets_manager]
 }
