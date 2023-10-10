@@ -43,8 +43,8 @@ jobs:
 
       - name: Create Environment
         run: |
+          cd ${{ env.working_dir }}
           cat << EOF > sec.tfvars
-          APP_NAME=Laravel
           db_username               = "${{ secrets.DB_USERNAME }}"
           db_password               = "${{ secrets.DB_PASSWORD }}"
           keycloak_admin_username   = "${{ secrets.KEYCLOAK_ADMIN_USERNAME }}"
@@ -66,7 +66,7 @@ jobs:
       - name: Terraform plan
         run: |
           cd ${{ env.working_dir }}
-          terraform plan -var-file=dev.tfvars -var-file=sec.tfvars
+          terraform plan -var-file="dev.tfvars" -var-file="sec.tfvars"
 
       - name: Terraform apply
         run: |
