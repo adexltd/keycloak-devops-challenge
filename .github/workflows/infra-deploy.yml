@@ -53,7 +53,7 @@ jobs:
           certificate_arn_us-east-2 = "arn:aws:acm:us-east-2:${{ secrets.ADEX_POC}}:certificate/${{ secrets.CERT_US_EAST_2}}"
           EOF
           cd ..
-          sed -i '2s;^;PROFILE=default\nAWS_ACCOUNT_ID=${{ secrets.ADEX_POC }}\n;' scripts/push.sh
+          sed -i '2s;^;PROFILE=OIDCSession\nAWS_ACCOUNT_ID=${{ secrets.ADEX_POC }}\n;' scripts/push.sh
           cat scripts/push.sh
 
       - name: Terraform Initialize
