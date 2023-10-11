@@ -1,12 +1,6 @@
 name: Infra provision
 
-on:
-    push:
-        branches:
-            - DEVX-142-feat/customized_theme_realm
-    pull_request:
-        branches:
-            - DEVX-142-feat/customized_theme_realm
+on: workflow_dispatch
 
 # GitHub token permissions
 permissions:

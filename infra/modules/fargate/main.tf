@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "default" {
         { "name" : "KC_DB_USERNAME", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["db_username"]}" },
         { "name" : "KC_DB_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["db_password"]}" },
         { "name" : "KEYCLOAK_ADMIN", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["keycloak_admin_username"]}" },
-        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["keycloak_admin_username"]}" }
+        { "name" : "KEYCLOAK_ADMIN_PASSWORD", "value" : "${jsondecode(data.aws_secretsmanager_secret_version.keycloak_current_secrets.secret_string)["keycloak_admin_password"]}" }
 
     ]
 
