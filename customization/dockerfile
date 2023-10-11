@@ -1,0 +1,25 @@
+FROM quay.io/keycloak/keycloak:22.0.1 as builder
+ENV KC_LOG_LEVEL=INFO
+ENV KC_FEATURES=step-up-authentication,admin-fine-grained-authz,scripts,token-exchange,declarative-user-profile,client-secret-rotation,recovery-codes,update-email
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_CACHE_CONFIG_FILE=cache-ispn-jdbc-ping.xml
+COPY conf/cache-ispn-jdbc-ping.xml /opt/keycloak/conf/cache-ispn-jdbc-ping.xml
+COPY themes/ /opt/keycloak/themes/
+COPY realms/* /opt/keycloak/data/import/
+RUN /opt/keycloak/bin/kc.sh build
+
+FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
+RUN mkdir -p /mnt/rootfs
+RUN dnf install  --installroot /mnt/rootfs curl --releasever 9 --setopt  install_weak_deps=false --nodocs -y; dnf --installroot /mnt/rootfs clean  all
+
+FROM quay.io/keycloak/keycloak:22.0.1
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
+COPY --from=builder /opt/keycloak/conf/cache-ispn-jdbc-ping.xml /opt/keycloak/conf
+COPY --from=builder /opt/keycloak/data/import/* /opt/keycloak/data/import/
+COPY --from=builder /opt/keycloak/themes/ /opt/keycloak/themes/
+COPY --from=ubi-micro-build /mnt/rootfs /
+WORKDIR /opt/keycloak
+EXPOSE 8080
+EXPOSE 8443
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start --import-realm"]

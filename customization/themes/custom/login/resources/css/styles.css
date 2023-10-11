@@ -1,0 +1,30 @@
+/*backend/docker/keycloak/themes/custom/login/resources/css/styles.css*/
+:root {
+    --pf-global--primary-color--100: #4b0081;
+    --pf-global--primary-color--200: #3d0168;
+    --default-background-color: #97A1CDFF;
+    --link-hover-color: #02679a;
+}
+ 
+.login-pf body {
+    /* background-image: url('../img/pexels-pixabay-358312.jpg'),
+    linear-gradient(135deg, var(--default-background-color) 0%, rgb(198, 168, 223));
+    */
+    background-color: white;
+} 
+.login-pf a:hover {
+    color: var(--link-hover-color);
+    text-decoration: none;
+}
+ 
+.pf-c-form-control {
+    --pf-global--primary-color--100: unset;
+}
+
+div.kc-logo-text {
+    background-image: url(../img/adex-logo-text.png);
+    background-repeat: no-repeat;
+    height: 63px;
+    width: 300px;
+    margin: 0 auto;
+}
